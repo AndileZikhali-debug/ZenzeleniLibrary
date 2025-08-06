@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Card Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    function LibraryCard({ libraryName, memberName, memberID, expirationDate }) {
+      return (
+        <div className="w-[3.5in] h-[2in] bg-white border-2 border-black rounded-lg shadow-lg p-4 flex flex-col justify-between">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gray-200 flex items-center justify-center text-xs">Logo</div>
+            <h2 className="ml-4 text-lg font-bold">{libraryName}</h2>
+          </div>
+          <div className="text-sm">
+            <p>Name: {memberName}</p>
+            <p>Member ID: {memberID}</p>
+            <p>Expires: {expirationDate}</p>
+          </div>
+          <div className="flex justify-center">
+            <div className="flex space-x-0.5">
+              {[...Array(20)].map((_, i) => (
+                <div key={i} className="w-1 h-6 bg-black"></div>
+              ))}
+            </div>
+          </div>
+          <p className="text-center text-xs">{memberID}</p>
+        </div>
+      );
+    }
+
+    function App() {
+      const [formData, setFormData] = React.useState({
+        libraryName: "City Library",
+        memberName: "John Doe",
+        memberID: "123456789",
+        expirationDate: "2026-12-31"
+      });
+
+      const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+      };
+
+      const handleDownload = () => {
+        const card = document.getElementById("library-card");
+        html2canvas(card, { scale: 2 }).then(canvas => {
+          const link = document.createElement("a");
+          link.download = "library-card.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+          <h1 className="text-2xl font-bold mb-4">Library Card Generator</h1>
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="bg-white p-4 rounded-lg shadow-md">
+              <h2 className="text-lg font-semibold mb-2">Enter Details</h2>
+              <div className="space-y-2">
+                <div>
+                  <label className="block text-sm">Library Name</label>
+                  <input
+                    type="text"
+                    name="libraryName"
+                    value={formData.libraryName}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm">Member Name</label>
+                  <input
+                    type="text"
+                    name="memberName"
+                    value={formData.memberName}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm">Member ID</label>
+                  <input
+                    type="text"
+                    name="memberID"
+                    value={formData.memberID}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm">Expiration Date</label>
+                  <input
+                    type="date"
+                    name="expirationDate"
+                    value={formData.expirationDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <button
+                  onClick={handleDownload}
+                  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                >
+                  Download Card as PNG
+                </button>
+              </div>
+            </div>
+            <div id="library-card">
+              <LibraryCard {...formData} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
